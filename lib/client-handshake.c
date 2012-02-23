@@ -98,7 +98,7 @@ struct libwebsocket * __libwebsocket_client_connect_2(
 	/* external POLL support via protocol 0 */
 	context->protocols[0].callback(context, wsi,
 		LWS_CALLBACK_ADD_POLL_FD,
-		(void *)(long)wsi->sock, NULL, POLLIN);
+				       (void *)(long)wsi->sock, NULL, POLLIN, context->protocols[0].user);
 
 	/* we are connected to server, or proxy */
 

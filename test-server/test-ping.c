@@ -101,7 +101,7 @@ static int
 callback_lws_mirror(struct libwebsocket_context * this,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+					       void *user, void *in, size_t len, void *c)
 {
 	struct timeval tv;
 	unsigned char *p;

@@ -75,7 +75,7 @@ enum demo_protocols {
 static int callback_http(struct libwebsocket_context * this,
 		struct libwebsocket *wsi,
 		enum libwebsocket_callback_reasons reason, void *user,
-							   void *in, size_t len)
+			 void *in, size_t len,void *c)
 {
 	int n;
 	char client_name[128];
@@ -221,7 +221,7 @@ static int
 callback_dumb_increment(struct libwebsocket_context * this,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+			void *user, void *in, size_t len, void *c)
 {
 	int n;
 	unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + 512 +
@@ -299,7 +299,7 @@ static int
 callback_lws_mirror(struct libwebsocket_context * this,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+		    void *user, void *in, size_t len, void *c)
 {
 	int n;
 	struct per_session_data__lws_mirror *pss = user;

@@ -306,7 +306,7 @@ just_kill_connection:
 	/* remove also from external POLL support via protocol 0 */
 	if (wsi->sock)
 		context->protocols[0].callback(context, wsi,
-		    LWS_CALLBACK_DEL_POLL_FD, (void *)(long)wsi->sock, NULL, 0);
+					       LWS_CALLBACK_DEL_POLL_FD, (void *)(long)wsi->sock, NULL, 0,context->protocols[0].user );
 
 	wsi->state = WSI_STATE_DEAD_SOCKET;
 
@@ -318,7 +318,7 @@ just_kill_connection:
 				 (old_state == WSI_STATE_AWAITING_CLOSE_ACK))) {
 		debug("calling back CLOSED\n");
 		wsi->protocol->callback(context, wsi, LWS_CALLBACK_CLOSED,
-						      wsi->user_space, NULL, 0);
+					wsi->user_space, NULL, 0, wsi->protocol->user);
 	} else
 		debug("not calling back closed due to old_state=%d\n",
 								     old_state);
@@ -681,7 +681,7 @@ user_service:
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_CLEAR_MODE_POLL_FD,
-			(void *)(long)wsi->sock, NULL, POLLOUT);
+					       (void *)(long)wsi->sock, NULL, POLLOUT, context->protocols[0].user);
 	}
 
 notify_action:
@@ -691,7 +691,7 @@ notify_action:
 	else
 		n = LWS_CALLBACK_SERVER_WRITEABLE;
 
-	wsi->protocol->callback(context, wsi, n, wsi->user_space, NULL, 0);
+	wsi->protocol->callback(context, wsi, n, wsi->user_space, NULL, 0, wsi->protocol->user);
 
 	return 0;
 }
@@ -920,7 +920,7 @@ libwebsockets_generate_client_handshake(struct libwebsocket_context *context,
 
 		context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_CLIENT_APPEND_HANDSHAKE_HEADER,
-				NULL, &p, (pkt + sizeof(pkt)) - p - 12);
+					       NULL, &p, (pkt + sizeof(pkt)) - p - 12,context->protocols[0].user);
 
 		p += sprintf(p, "\x0d\x0a");
 
@@ -979,7 +979,7 @@ libwebsockets_generate_client_handshake(struct libwebsocket_context *context,
 
 		n = context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_CLIENT_CONFIRM_EXTENSION_SUPPORTED,
-				wsi->user_space, (char *)ext->name, 0);
+						   wsi->user_space, (char *)ext->name, 0, context->protocols[0].user);
 
 		/*
 		 * zero return from callback means
@@ -1013,7 +1013,7 @@ libwebsockets_generate_client_handshake(struct libwebsocket_context *context,
 
 	context->protocols[0].callback(context, wsi,
 		LWS_CALLBACK_CLIENT_APPEND_HANDSHAKE_HEADER,
-		NULL, &p, (pkt + sizeof(pkt)) - p - 12);
+				       NULL, &p, (pkt + sizeof(pkt)) - p - 12,context->protocols[0].user);
 
 	p += sprintf(p, "\x0d\x0a");
 
@@ -1394,7 +1394,7 @@ check_accept:
 	wsi->protocol->callback(context, wsi,
 			 LWS_CALLBACK_CLIENT_ESTABLISHED,
 			 wsi->user_space,
-			 NULL, 0);
+				NULL, 0,wsi->protocol->user);
 
 	/*
 	 * inform all extensions, not just active ones since they
@@ -1532,7 +1532,7 @@ libwebsocket_service_fd(struct libwebsocket_context *context,
 
 		if ((context->protocols[0].callback)(context, wsi,
 				LWS_CALLBACK_FILTER_NETWORK_CONNECTION,
-					     (void*)(long)accept_fd, NULL, 0)) {
+						     (void*)(long)accept_fd, NULL, 0,context->protocols[0].user )) {
 			debug("Callback denied network connection\n");
 #ifdef WIN32
 			closesocket(accept_fd);
@@ -1610,7 +1610,7 @@ libwebsocket_service_fd(struct libwebsocket_context *context,
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, new_wsi,
 			LWS_CALLBACK_ADD_POLL_FD,
-			(void *)(long)accept_fd, NULL, POLLIN);
+					       (void *)(long)accept_fd, NULL, POLLIN, context->protocols[0].user);
 
 		break;
 
@@ -1664,7 +1664,7 @@ libwebsocket_service_fd(struct libwebsocket_context *context,
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, new_wsi,
 			LWS_CALLBACK_ADD_POLL_FD,
-			(void *)(long)accept_fd, NULL, POLLIN);
+					       (void *)(long)accept_fd, NULL, POLLIN, context->protocols[0].user);
 
 		break;
 
@@ -1743,7 +1743,7 @@ libwebsocket_service_fd(struct libwebsocket_context *context,
 				new_wsi->protocol->callback(context, new_wsi,
 					LWS_CALLBACK_BROADCAST,
 					new_wsi->user_space,
-					buf + LWS_SEND_BUFFER_PRE_PADDING, len);
+							    buf + LWS_SEND_BUFFER_PRE_PADDING, len, new_wsi->protocol->user);
 			}
 		}
 		break;
@@ -2239,7 +2239,7 @@ libwebsocket_callback_on_writable(struct libwebsocket_context *context,
 	/* external POLL support via protocol 0 */
 	context->protocols[0].callback(context, wsi,
 		LWS_CALLBACK_SET_MODE_POLL_FD,
-		(void *)(long)wsi->sock, NULL, POLLOUT);
+				       (void *)(long)wsi->sock, NULL, POLLOUT, context->protocols[0].user);
 
 	return 1;
 }
@@ -2344,12 +2344,12 @@ libwebsocket_rx_flow_control(struct libwebsocket *wsi, int enable)
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_SET_MODE_POLL_FD,
-			(void *)(long)wsi->sock, NULL, POLLIN);
+					       (void *)(long)wsi->sock, NULL, POLLIN,context->protocols[0].user);
 	else
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_CLEAR_MODE_POLL_FD,
-			(void *)(long)wsi->sock, NULL, POLLIN);
+					       (void *)(long)wsi->sock, NULL, POLLIN,context->protocols[0].user);
 
 #if 0
 	fprintf(stderr, "libwebsocket_rx_flow_control "
@@ -2682,7 +2682,7 @@ libwebsocket_create_context(int port, const char *interf,
 
 		context->protocols[0].callback(context, NULL,
 			LWS_CALLBACK_OPENSSL_LOAD_EXTRA_CLIENT_VERIFY_CERTS,
-			context->ssl_client_ctx, NULL, 0);
+					       context->ssl_client_ctx, NULL, 0, context->protocols[0].user);
 	}
 	/* as a server, are we requiring clients to identify themselves? */
 
@@ -2701,7 +2701,7 @@ libwebsocket_create_context(int port, const char *interf,
 
 		context->protocols[0].callback(context, NULL,
 			LWS_CALLBACK_OPENSSL_LOAD_EXTRA_SERVER_VERIFY_CERTS,
-						     context->ssl_ctx, NULL, 0);
+						     context->ssl_ctx, NULL, context->protocols[0].user);
 	}
 
 	if (context->use_ssl) {
@@ -2799,7 +2799,7 @@ libwebsocket_create_context(int port, const char *interf,
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_ADD_POLL_FD,
-			(void *)(long)sockfd, NULL, POLLIN);
+					       (void *)(long)sockfd, NULL, POLLIN,context->protocols[0].user);
 
 	}
 
@@ -2883,7 +2883,7 @@ libwebsocket_create_context(int port, const char *interf,
 		/* external POLL support via protocol 0 */
 		context->protocols[0].callback(context, wsi,
 			LWS_CALLBACK_ADD_POLL_FD,
-			(void *)(long)fd, NULL, POLLIN);
+					       (void *)(long)fd, NULL, POLLIN,context->protocols[0].user);
 	}
 
 	/*
@@ -3062,7 +3062,7 @@ libwebsockets_broadcast(const struct libwebsocket_protocols *protocol,
 				wsi->protocol->callback(context, wsi,
 					 LWS_CALLBACK_BROADCAST,
 					 wsi->user_space,
-					 buf, len);
+							buf, len, wsi->protocol->user);
 			}
 		}
 

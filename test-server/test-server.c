@@ -64,7 +64,7 @@ enum demo_protocols {
 static int callback_http(struct libwebsocket_context * context,
 		struct libwebsocket *wsi,
 		enum libwebsocket_callback_reasons reason, void *user,
-							   void *in, size_t len)
+			 void *in, size_t len,void* c)
 {
 	char client_name[128];
 	char client_ip[128];
@@ -177,7 +177,7 @@ static int
 callback_dumb_increment(struct libwebsocket_context * context,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+			void *user, void *in, size_t len,void* c)
 {
 	int n;
 	unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + 512 +
@@ -260,7 +260,7 @@ static int
 callback_lws_mirror(struct libwebsocket_context * context,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+		    void *user, void *in, size_t len, void* c)
 {
 	int n;
 	struct per_session_data__lws_mirror *pss = user;
@@ -354,24 +354,26 @@ callback_lws_mirror(struct libwebsocket_context * context,
 
 static struct libwebsocket_protocols protocols[] = {
 	/* first protocol must always be HTTP handler */
-
 	{
 		"http-only",		/* name */
 		callback_http,		/* callback */
-		0			/* per_session_data_size */
+		0,			/* per_session_data_size */
+		NULL
 	},
 	{
 		"dumb-increment-protocol",
 		callback_dumb_increment,
 		sizeof(struct per_session_data__dumb_increment),
+		NULL
 	},
 	{
 		"lws-mirror-protocol",
 		callback_lws_mirror,
-		sizeof(struct per_session_data__lws_mirror)
+		sizeof(struct per_session_data__lws_mirror),
+		NULL
 	},
 	{
-		NULL, NULL, 0		/* End of list */
+	  NULL, NULL, 0, NULL		/* End of list */
 	}
 };
 

@@ -523,10 +523,10 @@ struct libwebsocket_protocols {
 	const char *name;
 	int (*callback)(struct libwebsocket_context * context,
 			struct libwebsocket *wsi,
-			enum libwebsocket_callback_reasons reason, void *user,
-							  void *in, size_t len);
+			enum libwebsocket_callback_reasons reason, void *session,
+			void *in, size_t len, void *user);
 	size_t per_session_data_size;
-
+    void *user;
 	/*
 	 * below are filled in on server init and can be left uninitialized,
 	 * no need for user to use them directly either
@@ -536,6 +536,7 @@ struct libwebsocket_protocols {
 	int broadcast_socket_port;
 	int broadcast_socket_user_fd;
 	int protocol_index;
+
 };
 
 /**

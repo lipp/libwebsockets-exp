@@ -635,7 +635,7 @@ issue:
 			  wsi, LWS_CALLBACK_RECEIVE,
 			  wsi->user_space,
 			  &wsi->rx_user_buffer[LWS_SEND_BUFFER_PRE_PADDING],
-			  wsi->rx_user_buffer_head);
+						wsi->rx_user_buffer_head, wsi->protocol->user);
 		wsi->rx_user_buffer_head = 0;
 		break;
 	case LWS_RXPS_SEEN_76_FF:
@@ -801,7 +801,7 @@ spill:
 						wsi, LWS_CALLBACK_RECEIVE,
 						wsi->user_space,
 			  &wsi->rx_user_buffer[LWS_SEND_BUFFER_PRE_PADDING],
-						      wsi->rx_user_buffer_head);
+						wsi->rx_user_buffer_head, wsi->protocol->user);
 		else
 			fprintf(stderr, "No callback on payload spill!\n");
 
@@ -1129,7 +1129,7 @@ issue:
 						LWS_CALLBACK_CLIENT_RECEIVE,
 						wsi->user_space,
 			  &wsi->rx_user_buffer[LWS_SEND_BUFFER_PRE_PADDING],
-						      wsi->rx_user_buffer_head);
+						wsi->rx_user_buffer_head, wsi->protocol->user);
 		wsi->rx_user_buffer_head = 0;
 		break;
 	case LWS_RXPS_SEEN_76_FF:
@@ -1264,7 +1264,7 @@ spill:
 						wsi, callback_action,
 						wsi->user_space,
 			  &wsi->rx_user_buffer[LWS_SEND_BUFFER_PRE_PADDING],
-						      wsi->rx_user_buffer_head);
+						wsi->rx_user_buffer_head, wsi->protocol->user);
 		wsi->rx_user_buffer_head = 0;
 		break;
 	default:

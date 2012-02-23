@@ -59,7 +59,7 @@ static int
 callback_fraggle(struct libwebsocket_context * context,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+		 void *user, void *in, size_t len, void *c)
 {
 	int n;
 	unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + 2048 +

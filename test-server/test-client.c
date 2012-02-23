@@ -62,7 +62,7 @@ static int
 callback_dumb_increment(struct libwebsocket_context * this,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+			void *user, void *in, size_t len, void *c)
 {
 	switch (reason) {
 
@@ -105,7 +105,7 @@ static int
 callback_lws_mirror(struct libwebsocket_context * this,
 			struct libwebsocket *wsi,
 			enum libwebsocket_callback_reasons reason,
-					       void *user, void *in, size_t len)
+		    void *user, void *in, size_t len, void *c)
 {
 	unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + 4096 +
 						  LWS_SEND_BUFFER_POST_PADDING];

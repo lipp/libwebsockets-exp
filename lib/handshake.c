@@ -201,7 +201,7 @@ handshake_00(struct libwebsocket_context *context, struct libwebsocket *wsi)
 	if (wsi->protocol->callback)
 		wsi->protocol->callback(wsi->protocol->owning_server,
 				wsi, LWS_CALLBACK_ESTABLISHED,
-					  wsi->user_space, NULL, 0);
+					wsi->user_space, NULL, 0, wsi->protocol->user);
 
 	return 0;
 
@@ -392,7 +392,7 @@ handshake_0405(struct libwebsocket_context *context, struct libwebsocket *wsi)
 						wsi->protocol->owning_server,
 						wsi,
 					  LWS_CALLBACK_CONFIRM_EXTENSION_OKAY,
-						  wsi->user_space, ext_name, 0);
+						wsi->user_space, ext_name, 0, wsi->protocol->user);
 
 				/*
 				 * zero return from callback means
@@ -505,7 +505,7 @@ handshake_0405(struct libwebsocket_context *context, struct libwebsocket *wsi)
 	if (wsi->protocol->callback)
 		wsi->protocol->callback(wsi->protocol->owning_server,
 				wsi, LWS_CALLBACK_ESTABLISHED,
-					  wsi->user_space, NULL, 0);
+					  wsi->user_space, NULL, 0, wsi->protocol->user);
 
 	return 0;
 
@@ -598,7 +598,7 @@ libwebsocket_read(struct libwebsocket_context *context, struct libwebsocket *wsi
 			if (wsi->protocol->callback)
 				(wsi->protocol->callback)(context, wsi,
 				   LWS_CALLBACK_HTTP, wsi->user_space,
-				   wsi->utf8_token[WSI_TOKEN_GET_URI].token, 0);
+							  wsi->utf8_token[WSI_TOKEN_GET_URI].token, 0, wsi->protocol->user);
 			wsi->state = WSI_STATE_HTTP;
 			return 0;
 		}
@@ -655,7 +655,7 @@ libwebsocket_read(struct libwebsocket_context *context, struct libwebsocket *wsi
 
 		if ((wsi->protocol->callback)(wsi->protocol->owning_server, wsi,
 				LWS_CALLBACK_FILTER_PROTOCOL_CONNECTION,
-						&wsi->utf8_token[0], NULL, 0)) {
+					      &wsi->utf8_token[0], NULL, 0, wsi->protocol->user)) {
 			fprintf(stderr, "User code denied connection\n");
 			goto bail;
 		}
