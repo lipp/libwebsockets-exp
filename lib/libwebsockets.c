@@ -2777,6 +2777,7 @@ libwebsocket_create_context(int port, const char *interf,
 		if (n < 0) {
 			fprintf(stderr, "ERROR on binding to port %d (%d %d)\n",
 								port, n, errno);
+			libwebsocket_context_destroy(context);
 			return NULL;
 		}
 
